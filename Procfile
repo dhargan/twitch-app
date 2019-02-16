@@ -1,0 +1,1 @@
+web: gunicorn TwitchApp.wsgi --log-file -
