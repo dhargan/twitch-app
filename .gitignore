@@ -1,0 +1,10 @@
+
+TwitchApp/__pycache__/
+
+\.idea/
+
+TwitchApp/main/__pycache__/
+
+*.pyc
+
+*.xml
