@@ -6,7 +6,6 @@
 <script type="text/javascript">
     $(document).ready(function(){
         let code = '{{ code }}';
-        let csrftoken = Cookies.get('csrftoken');
         if(code !== '-1'){
             /*
             * If the authorization code is properly set;
@@ -17,12 +16,11 @@
                 url: 'twitch_auth',
                 type: 'POST',
                 data: {
-                    'code': code
+                    'code': code,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
+
                 dataType: 'json',
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                },
                 success: function(data){
                     if('data' in data) {
                         $("#login").hide();
