@@ -1,5 +1,6 @@
 from django.conf.urls import url, include
-from TwitchApp.main.views import login_page
+from django.urls import path
+from TwitchApp.main.views import login_page, twitch_auth
 """TwitchApp URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -17,5 +18,6 @@ Including another URLconf
 """
 
 urlpatterns = [
-    url(r'^', login_page),
+    path('', login_page),
+    path('twitch_auth', twitch_auth),
 ]

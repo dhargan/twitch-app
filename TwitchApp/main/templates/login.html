@@ -1,10 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login with your Twitch account</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %} Login with your Twitch account {% endblock %}
+
+{% block content %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        let code = '{{ code }}';
+        let csrftoken = Cookies.get('csrftoken');
+        if(code !== -1){
+            $.ajax({
+                url: 'twitch_auth',
+                type: 'POST',
+                data: {
+                    'code': code
+                },
+                dataType: 'json',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+                success: function(data){
+                    $("#login").hide();
+                    $("#streamer-select").show();
+                    $("#welcome-msg").append("Welcome "+data['data'][0]['display_name']+"! Please enter your favorite streamers name and click watch!");
+                }
+            })
+        }
+    });
+</script>
+<div class="login-container" id="login">
+    <div class="row">
+        <div class="col-12">
+            Please login with your twitch account and enter your favorite streamer.
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <a href="https://id.twitch.tv/oauth2/authorize?response_type={{ response_type }}&client_id={{ client_id }}&redirect_uri={{ redirect_uri }}"> <button type="button" class="btn btn-primary"><i class="fab fa-twitch"></i> Authorize</button> </a>
+        </div>
+    </div>
+</div>
+
+<div class="streamer-select-container" id="streamer-select">
+    <div class="row">
+        <div class="col-12" id="welcome-msg"></div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <form class="form-inline">
+                <div class="form-group mx-sm-3 mb-2">
+                    <label for="fav-streamer" class="sr-only">Favorite streamer</label>
+                    <input type="text" class="form-control" id="fav-streamer" placeholder="Favorite streamer">
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">Watch!</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
