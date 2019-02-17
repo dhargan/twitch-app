@@ -7,7 +7,7 @@
     $(document).ready(function(){
         let code = '{{ code }}';
         let csrftoken = Cookies.get('csrftoken');
-        if(code !== -1){
+        if(code !== '-1'){
             $.ajax({
                 url: 'twitch_auth',
                 type: 'POST',
@@ -19,9 +19,13 @@
                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
                 },
                 success: function(data){
-                    $("#login").hide();
-                    $("#streamer-select").show();
-                    $("#welcome-msg").append("Welcome "+data['data'][0]['display_name']+"! Please enter your favorite streamers name and click watch!");
+                    if('data' in data) {
+                        $("#login").hide();
+                        $("#streamer-select").show();
+                        $("#welcome-msg").append("Welcome " + data['data'][0]['display_name'] + "! Please enter your favorite streamers nickname and click watch!");
+                    }else{
+                        window.location.replace(window.location.href.split('?')[0]);
+                    }
                 }
             })
         }

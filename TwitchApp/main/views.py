@@ -10,7 +10,7 @@ def login_page(request):
         'client_id': TWITCH_CREDENTIALS['CLIENT_ID'],
         'redirect_uri': TWITCH_CREDENTIALS['REDIRECT_URI'],
         'response_type': 'code',
-        'scope': 'user:read:email',
+        'scope': '',
         'code': request.GET.get('code', -1)
     }
 
@@ -30,14 +30,17 @@ def twitch_auth(request):
     json_acceptable_string = response.text
     response = json.loads(json_acceptable_string)
 
-    access_token = response['access_token']
+    try:
+        access_token = response['access_token']
 
-    headers = {'Authorization': 'Bearer '+access_token}
-    response = requests.get(TWITCH_ENDPOINTS['users'], headers=headers)
-    json_acceptable_string = response.text
-    response = json.loads(json_acceptable_string)
+        headers = {'Authorization': 'Bearer '+access_token}
+        response = requests.get(TWITCH_ENDPOINTS['users'], headers=headers)
+        json_acceptable_string = response.text
+        response = json.loads(json_acceptable_string)
 
-    return JsonResponse(response)
+        return JsonResponse(response)
+    except KeyError:
+        return JsonResponse({})
 
 def watch_stream(request):
     data = {
