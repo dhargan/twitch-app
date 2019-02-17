@@ -8,3 +8,5 @@ TwitchApp/main/__pycache__/
 *.pyc
 
 *.xml
+
+staticfiles/
