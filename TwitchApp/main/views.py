@@ -30,7 +30,9 @@ def twitch_auth(request):
     json_acceptable_string = response.text
     response = json.loads(json_acceptable_string)
 
-    headers = {'Authorization': 'Bearer '+response['access_token']}
+    access_token = response['access_token']
+
+    headers = {'Authorization': 'Bearer '+access_token}
     response = requests.get(TWITCH_ENDPOINTS['users'], headers=headers)
     json_acceptable_string = response.text
     response = json.loads(json_acceptable_string)
@@ -39,7 +41,8 @@ def twitch_auth(request):
 
 def watch_stream(request):
     data = {
-        'streamer': request.GET.get('streamer', '')
+        'streamer': request.GET.get('streamer', ''),
+        'client_id': TWITCH_CREDENTIALS['CLIENT_ID']
     }
 
     return render(request, 'stream.html', data)

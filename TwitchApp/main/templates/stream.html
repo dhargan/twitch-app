@@ -4,18 +4,96 @@
 
 {% block content %}
 
-<!-- Add a placeholder for the Twitch embed -->
-<div id="twitch-embed"></div>
 
 <!-- Load the Twitch embed script -->
 <script src="https://embed.twitch.tv/embed/v1.js"></script>
 
-<!-- Create a Twitch.Embed object that will render within the "twitch-embed" root element. -->
 <script type="text/javascript">
-  new Twitch.Embed("twitch-embed", {
-    width: 1024,
-    height: 768,
-    channel: "{{ streamer }}"
-  });
+    $(document).ready(function(){
+        let login = '{{ streamer }}';
+        let broadcaster_id = '';
+        $.ajax({
+            url: 'https://api.twitch.tv/helix/users',
+            type: 'GET',
+            data: {
+                'login': login
+            },
+            dataType: 'json',
+            headers: {
+                'Client-ID': '{{ client_id }}',
+            },
+            success: function(data){
+                if(data['data'].length > 0) {
+                    broadcaster_id = data['data'][0]['id'];
+                    $.ajax({
+                        url: 'https://api.twitch.tv/helix/videos',
+                        type: 'GET',
+                        data: {
+                            'user_id': broadcaster_id,
+                            'first': 10
+                        },
+                        dataType: 'json',
+                        headers: {
+                            'Client-ID': '{{ client_id }}',
+                        },
+                        success: function (data) {
+                            <!-- Create a Twitch.Embed object that will render within the "twitch-embed" root element. -->
+                            new Twitch.Embed("twitch-embed", {
+                                width: 1024,
+                                height: 768,
+                                channel: "{{ streamer }}"
+                            });
+                            $("#now-watching").append("<h3>Now watching " + login + "</h3>");
+                            $("#latest-events-id").append("<h3>Latest videos of " + login + "</h3>");
+                            let i = 0;
+                            data['data'].forEach(function (value) {
+                                i++;
+                                let thumbnail_url = value.thumbnail_url;
+                                thumbnail_url = thumbnail_url.replace("%{width}", "320");
+                                thumbnail_url = thumbnail_url.replace("%{height}", "240");
+                                if (i <= 5) {
+                                    $("#last-10-1").append(
+                                        "<div class='col-2'>" +
+                                        "<a href='" + value.url + "' target='_blank'><img alt='" + value.title + "' src='" + thumbnail_url + "' class='img-fluid img-thumbnail'></a>" +
+                                        "</div>"
+                                    );
+                                }else{ //
+                                    $("#last-10-2").append(
+                                        "<div class='col-2'>" +
+                                        "<a href='" + value.url + "' target='_blank'><img alt='" + value.title + "' src='" + thumbnail_url + "' class='img-fluid img-thumbnail'></a>" +
+                                        "</div>"
+                                    );
+                                }
+                            })
+                        }
+                    });
+                }else{
+                    $("#now-watching").append("<h3>Streamer not found: " + login + "</h3><br><a href='/'><-- Go back</a>");
+                }
+            }
+        })
+    });
 </script>
+
+<div class="row streamer-container" style="margin-top: 512px; margin-left: 384px;">
+    <div class="col-12">
+        <div class="row">
+            <div class="col-12">
+                <div id="now-watching"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <!-- Add a placeholder for the Twitch embed -->
+                <div id="twitch-embed"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12" id="latest-events-id"></div>
+        </div>
+        <div class="row" id="last-10-1"></div>
+        <div class="row" id="last-10-2"></div>
+    </div>
+</div>
+
 {% endblock %}
