@@ -8,6 +8,11 @@
         let code = '{{ code }}';
         let csrftoken = Cookies.get('csrftoken');
         if(code !== '-1'){
+            /*
+            * If the authorization code is properly set;
+            * 1) Hide login button
+            * 2) Show "Favorite streamer" form
+            * */
             $.ajax({
                 url: 'twitch_auth',
                 type: 'POST',
@@ -23,7 +28,7 @@
                         $("#login").hide();
                         $("#streamer-select").show();
                         $("#welcome-msg").append("Welcome " + data['data'][0]['display_name'] + "! Please enter your favorite streamers nickname and click watch!");
-                    }else{
+                    }else{ // Code is set but either invalid or expired
                         window.location.replace(window.location.href.split('?')[0]);
                     }
                 }
@@ -50,6 +55,7 @@
     </div>
     <div class="row">
         <div class="col-12">
+            <!--Sent login name of the favorite streamer to the watch_stream page via an HTML form-->
             <form class="form-inline" method="get" action="watch_stream">
                 <div class="form-group mx-sm-3 mb-2">
                     <label for="fav-streamer" class="sr-only">Favorite streamer</label>

@@ -12,6 +12,7 @@
     $(document).ready(function(){
         let login = '{{ streamer }}';
         let broadcaster_id = '';
+        // Send login info, get user_id info
         $.ajax({
             url: 'https://api.twitch.tv/helix/users',
             type: 'GET',
@@ -23,14 +24,15 @@
                 'Client-ID': '{{ client_id }}',
             },
             success: function(data){
-                if(data['data'].length > 0) {
-                    broadcaster_id = data['data'][0]['id'];
+                if(data['data'].length > 0) { // If the login info is valid
+                    broadcaster_id = data['data'][0]['id']; // Fetch user_id (broadcaster_id)
+                    // Send user_id get users broadcast information
                     $.ajax({
                         url: 'https://api.twitch.tv/helix/videos',
                         type: 'GET',
                         data: {
                             'user_id': broadcaster_id,
-                            'first': 10
+                            'first': 10 // Only first 10
                         },
                         dataType: 'json',
                         headers: {
@@ -48,9 +50,14 @@
                             let i = 0;
                             data['data'].forEach(function (value) {
                                 i++;
+                                /*
+                                * Thumbnail links that are fetched from the Twitch API has dynamic thumbnail_urls
+                                * Set their height to 320 and width to 240
+                                * */
                                 let thumbnail_url = value.thumbnail_url;
                                 thumbnail_url = thumbnail_url.replace("%{width}", "320");
                                 thumbnail_url = thumbnail_url.replace("%{height}", "240");
+                                // TODO: Find a better solution. Strategy pattern might suits here.
                                 if (i <= 5) {
                                     $("#last-10-1").append(
                                         "<div class='col-2'>" +
@@ -67,7 +74,7 @@
                             })
                         }
                     });
-                }else{
+                }else{ // Given login info is not valid
                     $("#now-watching").append("<h3>Streamer not found: " + login + "</h3><br><a href='/'><-- Go back</a>");
                 }
             }
