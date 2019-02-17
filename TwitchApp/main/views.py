@@ -37,6 +37,13 @@ def twitch_auth(request):
 
     return JsonResponse(response)
 
+def watch_stream(request):
+    data = {
+        'streamer': request.GET.get('streamer', '')
+    }
+
+    return render(request, 'stream.html', data)
+
 
 
 
