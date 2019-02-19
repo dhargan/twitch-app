@@ -8,7 +8,7 @@ Playing around with Twitch API
 This is a very simple app yet relatively there are bottlenecks:
 - In order to get streamers video information, two calls need to be made to the Twitch API. One for getting user_id using login info 
 and one for getting stream information using user_id
-- Again, two calls are being made to get authenticated and use authenticateion token to get user data.
+- Again, two calls are being made to get authenticated and use authentication token to get user data.
 
 If millions of requests a day are going to be made with this app;
 - 1 dyno won't be enough (in terms of Heroku deployment). Apps like AdeptScale in Heroku might do the trick.
